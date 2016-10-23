@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+
+    window.onload = function(){
+        var iframeWindow = document.getElementById('frame1').contentWindow;
+        document.getElementById('send').onclick = function(){
+            //获取要发送给框架页面的消息
+            var value = document.getElementById('text1').value;
+            //postMessage第一个参数为发送的内容
+            //第二个参数为要要传送的目的地，当然如果不限于任何域名的话可以填*字符，以表示全部
+            iframeWindow.postMessage(value, 'http://localhost:20707/%E6%B5%8B%E8%AF%95%E8%B7%A8%E5%9F%9F2.html');
+        }
+    }
+    </script>
+</head>
+<body>
+    <iframe id="frame1" name="frame1" src="http://localhost:20707/%E6%B5%8B%E8%AF%95%E8%B7%A8%E5%9F%9F2.html"></iframe>
+    <input type="text" id="text1" value="" />
+    <input type="button" id="send" value="发送" />
+</body>
+</html>
