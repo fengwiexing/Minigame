@@ -91,13 +91,17 @@
         function startGame() {
             increment = 60;
             increment2 = 100;
-            var addValue = 20;
             addEle();
+            boundEvents();
+        }
+
+        function boundEvents() {
+            var addValue = 20;
             //鼠标事件
             innerBox.mousedown(function () { downEvent(addValue) }).mouseup(function () { upEvent() });
 
             //下面是触屏事件的操作
-            innerBox.on('touchstart',function (e) {
+            innerBox.on('touchstart', function (e) {
                 e.preventDefault();
                 //var touch = e.touches[0];//获取第一个触摸事件 ，就是当二个手指分别都触摸在屏幕时，
                 if (e.originalEvent.changedTouches.length == 1) {
@@ -110,16 +114,15 @@
                 //  var touch = e.touches[0];//获取第一个触摸事件 ，就是当二个手指分别都触摸在屏幕时，
             }, false)
 
-            innerBox.on('touchend',function (e) {
+            innerBox.on('touchend', function (e) {
                 e.preventDefault();
                 if (e.originalEvent.changedTouches.length == 1) {
                     upEvent()
                 }
             })
-
-
-       
         }
+
+
         //鼠标事件
         var set;
         function downEvent(addValue) {
@@ -166,13 +169,14 @@
                 }, 600)
 
             } else {
+                innerBox.off();//移除所有事件
                 setTimeout(function () {
                     //人物前进移动
                     var ww = w + parseInt($(".bridge").eq(1).outerWidth()) + parseInt(figure.css("left"));
 
                     figure.stop().animate({ left: ww }, 800, function () {
                         bol = true;
-                        addEle()
+                        addEle(boundEvents) //回调函数重新执行事件绑定
                         $("h1").text("成功闯了 " + sss + " 关");
                         sss++;
                     })
@@ -188,7 +192,7 @@
 
 
 
-        function addEle() {
+        function addEle(boundEvents) {
             increment = increment < 40 ? 40 : increment;
             var randoms = parseInt(Math.random() * (increment - 20) + 20);
           
@@ -223,9 +227,7 @@
                 figure.stop().animate({ left: w - 20 }, 500);
             }
             //移动第2个桥墩
-            bridge.eq(1).stop().animate({ left: '0px' }, 500);
-           
-
+            bridge.eq(1).stop().animate({ left: '0px' }, 500, function () { boundEvents() });//移动桥墩后重新绑定事件
         }
  
         var img = ["新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_1.JPG", "新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_2.JPG", "新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_3.JPG", "新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_4.JPG", "新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_5.JPG", "新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_6.JPG", "新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_7.JPG", "新文件夹1/32fa828ba61ea8d3164086b8970a304e251f5828.jpg_8.JPG"],
@@ -244,28 +246,31 @@
             setInterval(function () {
                 if (conut > 7) {
                     conut = 0;
-
                 }
                 backgroundImage(img[conut]);
                 conut++;
             }, 100);
-         //   screenSize();
         }
 
-
+        //点击 开始游戏 或 再来一次！
         $("#outerBox_1 button").on('click', function () {
-            clearInterval(set);
             var _this = $(this);
-            sss = 1,
+            sss = 1;//第一局开始
             outerBox_1 = $("#outerBox_1");
+
             if (outerBox_1.width() < 499) {
-                outerBox_1.effect("scale", { percent: 0 }, 600, function () { $(this).css({ "top": 0, "left": 0, 'display': 'none' }); _this.text('再来一次！'); $("h1").text("第 " + sss + " 关"); });
+                //缩放形式隐藏outerBox_1元素
+                outerBox_1.effect("scale", { percent: 0 }, 600, function () {
+                    $(this).css({ "top": 0, "left": 0, 'display': 'none' });
+                    _this.text('再来一次！'); $("h1").text("第 " + sss + " 关");
+                });
             } else {
+                //爆炸形式隐藏 outerBox_1元素
                 outerBox_1.effect("explode", 500, function () { _this.text('再来一次！'); $("h1").text("第 " + sss + " 关"); });
             }
             $("#outerBox p").hide();
             figure.css({ "bottom": 130, 'left': 0 });
-            startGame()
+            startGame()//重新绑定事件
         })
    
         function end() { 
